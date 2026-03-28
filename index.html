@@ -116,6 +116,17 @@
   .gantt-sub-row.active { background:rgba(30,41,59,.4); }
   .gantt-sub-row .gantt-bar { height:18px; top:6px; font-size:8px; }
 
+  .hw-toggle { display:flex; align-items:center; height:28px; padding:0 14px 0 20px; border-bottom:1px solid rgba(71,85,105,.2); font-size:10px; color:var(--text-dim); background:rgba(30,41,59,.3); cursor:pointer; gap:6px; user-select:none; transition:background .15s; }
+  .hw-toggle:hover { background:rgba(30,41,59,.5); }
+  .hw-toggle .hw-chevron { font-size:8px; transition:transform .2s; }
+  .hw-toggle.collapsed .hw-chevron { transform:rotate(-90deg); }
+  .hw-toggle .hw-count { font-size:9px; background:rgba(148,163,184,.15); padding:1px 6px; border-radius:8px; }
+  .timeline-hw-toggle { height:28px; border-bottom:1px solid rgba(71,85,105,.2); background:rgba(30,41,59,.3); }
+
+  .sku-row.hw-item { padding-left:44px; background:rgba(15,23,42,.3); }
+  .sku-row.hw-item .sku-name { font-size:11px; color:var(--text-dim); }
+  .sku-sub-row.hw-item { padding-left:58px; background:rgba(15,23,42,.3); }
+
   .inventory-badge { display:inline-flex; align-items:center; padding:1px 7px; border-radius:10px; font-size:9px; font-weight:600; }
   .inventory-badge.low { background:rgba(239,68,68,.2); color:#FCA5A5; }
   .inventory-badge.medium { background:rgba(245,158,11,.2); color:#FCD34D; }
@@ -382,9 +393,9 @@ const DEFAULT_DATA = {
       { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
       { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
       { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+      { sku:'Cart Hardware 1', hw:true, inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Hardware 2', hw:true, inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Hardware 3', hw:true, inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-01','2026-04-22'] }},
@@ -402,8 +413,8 @@ const DEFAULT_DATA = {
   safebet: {
     packaging: [
       { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'Cart 1 Hardware', hw:true, inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'Cart 2 Hardware', hw:true, inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
       { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
       { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
     ],
@@ -453,6 +464,7 @@ let notesData = loadNotes();
 let currentBrand = 'all';
 let currentZoom = 'quarter';
 let collapsedBrands = {};
+let collapsedHardware = {}; // keyed by brand
 let selectedItem = null; // {brand, type, idx}
 let dragState = null;
 
@@ -552,13 +564,29 @@ function renderSidebar() {
     h+=`<div class="brand-group" data-brand="${bk}">`;
     h+=`<div class="brand-header ${col?'collapsed':''}" onclick="toggleBrand('${bk}')"><div class="brand-dot" style="background:${brand.color}"></div><span class="brand-name">${brand.name}</span><span class="brand-chevron">&#9662;</span></div>`;
     if(!col){
-      h+=`<div class="sku-row category-header"><span class="sku-name">Packaging & Hardware</span></div>`;
-      data.packaging.forEach((item,i)=>{
+      h+=`<div class="sku-row category-header"><span class="sku-name">Packaging</span></div>`;
+      const pkgItems = data.packaging.filter(it=>!it.hw);
+      const hwItems = data.packaging.filter(it=>it.hw);
+      pkgItems.forEach((item,_)=>{
+        const i = data.packaging.indexOf(item);
         const m=invMonths(item), st=invStatus(m), act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===i;
         const ni = hasNotes(bk,'packaging',i);
         h+=`<div class="sku-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
         h+=`<div class="sku-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
       });
+      if(hwItems.length>0){
+        const hwCol = collapsedHardware[bk] !== false; // collapsed by default
+        h+=`<div class="hw-toggle ${hwCol?'collapsed':''}" onclick="toggleHardware('${bk}')"><span class="hw-chevron">&#9662;</span><span>Hardware</span><span class="hw-count">${hwItems.length}</span></div>`;
+        if(!hwCol){
+          hwItems.forEach((item,_)=>{
+            const i = data.packaging.indexOf(item);
+            const m=invMonths(item), st=invStatus(m), act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===i;
+            const ni = hasNotes(bk,'packaging',i);
+            h+=`<div class="sku-row hw-item ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
+            h+=`<div class="sku-sub-row hw-item ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
+          });
+        }
+      }
       h+=`<button class="add-btn" onclick="addSKU('${bk}','packaging')">+ Add Packaging SKU</button>`;
       h+=`<div class="sku-row category-header"><span class="sku-name">Brand & Marketing</span></div>`;
       data.brand.forEach((item,i)=>{
@@ -571,6 +599,30 @@ function renderSidebar() {
     h+='</div>';
   });
   sb.innerHTML=h;
+}
+
+function renderPhasesSubRow(bk,item,idx,act){
+  let s=`<div class="gantt-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
+  ['design','compliance','factory','photo','launch','landed'].forEach(ph=>{
+    const dates=item.phases[ph];
+    if(!dates) return;
+    const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l,c=PHASE_COLORS[ph],label=ph.charAt(0).toUpperCase()+ph.slice(1);
+    s+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="${ph}"
+      onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','${label}','${dates[0]}','${dates[1]}')" onmouseleave="hideTip()"
+      onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'${ph}')"
+      ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+      <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','left')"></div>
+      ${w>7?label:''}
+      <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','right')"></div>
+    </div>`;
+  });
+  s+='</div>';
+  return s;
+}
+
+function toggleHardware(bk) {
+  collapsedHardware[bk] = collapsedHardware[bk] === false ? true : false;
+  render();
 }
 
 function renderTimeline() {
@@ -590,9 +642,12 @@ function renderTimeline() {
     body+=`<div class="timeline-brand-header"></div>`;
     if(!col){
       body+=`<div class="timeline-category-header"></div>`;
-      data.packaging.forEach((item,idx)=>{
+      const tlPkg = data.packaging.filter(it=>!it.hw);
+      const tlHw = data.packaging.filter(it=>it.hw);
+      // Packaging items
+      tlPkg.forEach((item,_)=>{
+        const idx = data.packaging.indexOf(item);
         const act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===idx;
-        // Row 1: Inventory only
         const invDates = item.phases.inventory;
         if(invDates){
           const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
@@ -606,23 +661,33 @@ function renderTimeline() {
             <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
           </div></div>`;
         }
-        // Row 2: Design → Compliance → Factory → Photo → Launch
-        body+=`<div class="gantt-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
-        ['design','compliance','factory','photo','launch','landed'].forEach(ph=>{
-          const dates=item.phases[ph];
-          if(!dates) return;
-          const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l,c=PHASE_COLORS[ph],label=ph.charAt(0).toUpperCase()+ph.slice(1);
-          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="${ph}"
-            onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','${label}','${dates[0]}','${dates[1]}')" onmouseleave="hideTip()"
-            onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'${ph}')"
-            ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
-            <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','left')"></div>
-            ${w>7?label:''}
-            <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','right')"></div>
-          </div>`;
-        });
-        body+='</div>';
+        body+=renderPhasesSubRow(bk,item,idx,act);
       });
+      // Hardware toggle + items
+      if(tlHw.length>0){
+        const hwCol = collapsedHardware[bk] !== false;
+        body+=`<div class="timeline-hw-toggle"></div>`;
+        if(!hwCol){
+          tlHw.forEach((item,_)=>{
+            const idx = data.packaging.indexOf(item);
+            const act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===idx;
+            const invDates = item.phases.inventory;
+            if(invDates){
+              const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
+              body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
+              body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
+                onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','Inventory','${invDates[0]}','${invDates[1]}')" onmouseleave="hideTip()"
+                onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'inventory')"
+                ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+                <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','left')"></div>
+                ${w>7?'Inventory':''}
+                <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
+              </div></div>`;
+            }
+            body+=renderPhasesSubRow(bk,item,idx,act);
+          });
+        }
+      }
       body+=`<div class="timeline-add-row"></div>`;
       body+=`<div class="timeline-category-header"></div>`;
       data.brand.forEach((item,idx)=>{
