@@ -288,7 +288,8 @@
     <div class="legend-item"><div class="legend-dot" style="background:var(--design)"></div>Design</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--compliance)"></div>Compliance</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--factory)"></div>Factory</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--landed)"></div>Landed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6B3FA0"></div>Photo</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--landed)"></div>Launch</div>
     <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>Strategy</div>
     <div class="legend-item"><div class="legend-dot" style="background:#0F6E56"></div>Brand Evo</div>
     <div class="legend-item"><div class="legend-dot" style="background:#6B3FA0"></div>Photo</div>
@@ -378,12 +379,12 @@ if (sessionStorage.getItem('gantt_auth') === '1') {
 const DEFAULT_DATA = {
   headchange: {
     packaging: [
-      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-30'],factory:['2026-06-15','2026-08-15'],landed:['2026-08-15','2026-09-01']}},
-      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-30'],factory:['2026-06-15','2026-08-01'],landed:['2026-08-01','2026-08-15']}},
-      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-15'],factory:['2026-06-01','2026-07-30'],landed:['2026-07-30','2026-08-15']}},
-      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
+      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
+      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
+      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
+      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
+      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
+      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-01','2026-04-22'] }},
@@ -400,11 +401,11 @@ const DEFAULT_DATA = {
   },
   safebet: {
     packaging: [
-      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}},
-      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
+      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
+      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
+      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
+      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
+      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-29','2026-05-20'] }},
@@ -420,7 +421,7 @@ const DEFAULT_DATA = {
   },
   bubbles: {
     packaging: [
-      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-08-15'],factory:['2026-08-01','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
+      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-24'],photo:['2026-11-24','2026-12-15'],launch:['2026-12-15','2026-12-29']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-05-27','2026-06-17'] }},
@@ -442,7 +443,7 @@ const BRANDS = {
   bubbles: { name:'Bubbles', color:'#2563EB' }
 };
 
-const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6', strategy:'#185FA5', brandev:'#0F6E56', photo:'#6B3FA0', expansion:'#2D6A9F', dev:'#1A5C7A' };
+const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', photo:'#6B3FA0', launch:'#10B981', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6', strategy:'#185FA5', brandev:'#0F6E56', expansion:'#2D6A9F', dev:'#1A5C7A' };
 const BRAND_COLORS = ['website','social','display','sales','merch'];
 const BRAND_SUB_PHASES = { design: '#EC4899', launch: '#10B981' };
 
@@ -503,7 +504,7 @@ function hasNotes(brand, type, idx) { const k = noteKey(brand,type,idx); return 
 
 // ── Timeline helpers ──
 function getMonthRange() {
-  const r = { quarter:{start:new Date(2026,2,1),months:10}, half:{start:new Date(2026,2,1),months:12}, year:{start:new Date(2026,0,1),months:16} };
+  const r = { quarter:{start:new Date(2026,2,1),months:12}, half:{start:new Date(2026,2,1),months:14}, year:{start:new Date(2026,0,1),months:18} };
   return r[currentZoom];
 }
 function dateToPercent(ds) {
@@ -556,7 +557,7 @@ function renderSidebar() {
         const m=invMonths(item), st=invStatus(m), act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===i;
         const ni = hasNotes(bk,'packaging',i);
         h+=`<div class="sku-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
-        h+=`<div class="sku-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Landed</span></div>`;
+        h+=`<div class="sku-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
       });
       h+=`<button class="add-btn" onclick="addSKU('${bk}','packaging')">+ Add Packaging SKU</button>`;
       h+=`<div class="sku-row category-header"><span class="sku-name">Brand & Marketing</span></div>`;
@@ -605,9 +606,9 @@ function renderTimeline() {
             <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
           </div></div>`;
         }
-        // Row 2: Design → Compliance → Factory → Landed
+        // Row 2: Design → Compliance → Factory → Photo → Launch
         body+=`<div class="gantt-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
-        ['design','compliance','factory','landed'].forEach(ph=>{
+        ['design','compliance','factory','photo','launch','landed'].forEach(ph=>{
           const dates=item.phases[ph];
           if(!dates) return;
           const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l,c=PHASE_COLORS[ph],label=ph.charAt(0).toUpperCase()+ph.slice(1);
