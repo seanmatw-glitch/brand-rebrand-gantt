@@ -374,15 +374,15 @@ if (sessionStorage.getItem('gantt_auth') === '1') {
 const DEFAULT_DATA = {
   headchange: {
     packaging: [
-      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-03-15','2026-05-15'],compliance:['2026-05-15','2026-06-30'],factory:['2026-06-15','2026-08-15'],landed:['2026-08-15','2026-09-01']}},
-      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-03-15','2026-05-15'],compliance:['2026-05-15','2026-06-30'],factory:['2026-06-15','2026-08-01'],landed:['2026-08-01','2026-08-15']}},
-      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-03-15','2026-05-01'],compliance:['2026-05-01','2026-06-15'],factory:['2026-06-01','2026-07-30'],landed:['2026-07-30','2026-08-15']}},
-      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-15','2026-06-15'],compliance:['2026-06-15','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
+      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-30'],factory:['2026-06-15','2026-08-15'],landed:['2026-08-15','2026-09-01']}},
+      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-30'],factory:['2026-06-15','2026-08-01'],landed:['2026-08-01','2026-08-15']}},
+      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-06-15'],factory:['2026-06-01','2026-07-30'],landed:['2026-07-30','2026-08-15']}},
+      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
     ],
     brand: [
-      { sku:'Website', color:'website', phases:{ design:['2026-04-01','2026-06-01'], launch:['2026-06-01','2026-07-01'] }},
+      { sku:'Website', color:'website', phases:{ design:['2026-04-29','2026-06-03'], launch:['2026-06-03','2026-07-01'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-01','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
       { sku:'Sales Assets', color:'sales', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-07-30'] }},
@@ -391,14 +391,14 @@ const DEFAULT_DATA = {
   },
   safebet: {
     packaging: [
-      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-03-15','2026-05-30'],compliance:['2026-05-30','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-04-01','2026-05-30'],compliance:['2026-05-30','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-15','2026-06-15'],compliance:['2026-06-15','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}},
-      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
-      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
+      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}},
+      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
     ],
     brand: [
-      { sku:'Website', color:'website', phases:{ design:['2026-04-15','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
+      { sku:'Website', color:'website', phases:{ design:['2026-06-03','2026-07-08'], launch:['2026-07-08','2026-08-01'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-09-01'] }},
       { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
@@ -407,10 +407,10 @@ const DEFAULT_DATA = {
   },
   bubbles: {
     packaging: [
-      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
+      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-08-15'],factory:['2026-08-01','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
     ],
     brand: [
-      { sku:'Website', color:'website', phases:{ design:['2026-05-01','2026-06-30'], launch:['2026-06-30','2026-07-30'] }},
+      { sku:'Website', color:'website', phases:{ design:['2026-06-24','2026-07-22'], launch:['2026-07-22','2026-08-15'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-07-01','2026-08-15'], launch:['2026-08-15','2026-09-15'] }},
       { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-08-30'] }},
