@@ -379,12 +379,12 @@ if (sessionStorage.getItem('gantt_auth') === '1') {
 const DEFAULT_DATA = {
   headchange: {
     packaging: [
-      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
-      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
-      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
-      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
-      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}},
-      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-29'],photo:['2026-09-29','2026-10-20'],launch:['2026-10-20','2026-11-03']}}
+      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-01','2026-04-22'] }},
@@ -401,11 +401,11 @@ const DEFAULT_DATA = {
   },
   safebet: {
     packaging: [
-      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
-      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
-      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
-      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}},
-      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-11-03'],photo:['2026-11-03','2026-11-24'],launch:['2026-11-24','2026-12-08']}}
+      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
+      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-29','2026-05-20'] }},
@@ -421,7 +421,7 @@ const DEFAULT_DATA = {
   },
   bubbles: {
     packaging: [
-      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-24'],photo:['2026-11-24','2026-12-15'],launch:['2026-12-15','2026-12-29']}}
+      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-05-27','2026-06-17'] }},
