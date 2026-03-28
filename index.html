@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Rebrand Implementation Timeline</title>
+<style>
+  :root {
+    --headchange: #7C3AED;
+    --safebet: #059669;
+    --bubbles: #2563EB;
+    --bg: #0F172A;
+    --surface: #1E293B;
+    --surface2: #334155;
+    --text: #F1F5F9;
+    --text-dim: #94A3B8;
+    --border: #475569;
+    --inventory: #F59E0B;
+    --design: #EC4899;
+    --compliance: #8B5CF6;
+    --factory: #F97316;
+    --landed: #10B981;
+    --website: #06B6D4;
+    --social: #3B82F6;
+    --display: #A855F7;
+    --sales: #EF4444;
+    --merch: #14B8A6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+  /* Curador Logo */
+  .curador-logo { display:inline-flex; align-items:baseline; font-family:'Georgia','Times New Roman',serif; font-weight:400; letter-spacing:6px; text-transform:uppercase; }
+  .curador-logo .c { color:#F1F5F9; }
+  .curador-logo .u { color:#4ADE80; }
+  .curador-logo .rest { color:#F1F5F9; }
+  .curador-logo.sm { font-size:18px; letter-spacing:4px; }
+  .curador-logo.lg { font-size:48px; letter-spacing:8px; }
+
+  /* Password Gate */
+  .pw-gate { position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity .4s, visibility .4s; }
+  .pw-gate.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+  .pw-box { text-align:center; }
+  .pw-box .curador-logo { margin-bottom:40px; }
+  .pw-subtitle { color:var(--text-dim); font-size:13px; margin-bottom:24px; letter-spacing:1px; }
+  .pw-form { display:flex; gap:8px; justify-content:center; }
+  .pw-form input { padding:10px 16px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:14px; width:240px; outline:none; text-align:center; letter-spacing:1px; }
+  .pw-form input:focus { border-color:var(--headchange); }
+  .pw-form input::placeholder { color:var(--text-dim); }
+  .pw-form button { padding:10px 24px; border-radius:8px; border:none; background:#4ADE80; color:#0F172A; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:.5px; }
+  .pw-form button:hover { background:#22C55E; }
+  .pw-error { color:#FCA5A5; font-size:11px; margin-top:12px; height:16px; }
+  .pw-line { width:60px; height:1px; background:var(--border); margin:0 auto 30px; }
+
+  .header { background:linear-gradient(135deg,#1E293B,#0F172A); border-bottom:1px solid var(--border); padding:20px 32px; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:center; gap:16px; margin-bottom:2px; }
+  .header h1 { font-size:22px; font-weight:700; letter-spacing:-0.5px; }
+  .header p { color:var(--text-dim); font-size:13px; margin-top:2px; }
+  .controls { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center; }
+  .filter-btn { padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; font-size:12px; font-weight:500; transition:all .2s; }
+  .filter-btn:hover { background:var(--surface2); }
+  .filter-btn.active { border-color:transparent; }
+  .filter-btn.active[data-brand="all"] { background:var(--surface2); border-color:var(--text-dim); }
+  .filter-btn.active[data-brand="headchange"] { background:var(--headchange); }
+  .filter-btn.active[data-brand="safebet"] { background:var(--safebet); }
+  .filter-btn.active[data-brand="bubbles"] { background:var(--bubbles); }
+
+  .action-btns { margin-left:auto; display:flex; gap:6px; }
+  .action-btn { padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-dim); cursor:pointer; font-size:11px; font-weight:500; transition:all .2s; }
+  .action-btn:hover { background:var(--surface2); color:var(--text); }
+  .action-btn.danger:hover { background:#7F1D1D; border-color:#DC2626; color:#FCA5A5; }
+
+  .view-toggle { display:flex; gap:3px; background:var(--surface); border-radius:6px; padding:2px; }
+  .view-btn { padding:5px 12px; border:none; background:transparent; color:var(--text-dim); cursor:pointer; border-radius:5px; font-size:12px; transition:all .2s; }
+  .view-btn.active { background:var(--surface2); color:var(--text); }
+
+  .legend { display:flex; gap:14px; margin-top:10px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-dim); }
+  .legend-dot { width:9px; height:9px; border-radius:2px; }
+
+  .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; padding:16px 32px; border-bottom:1px solid var(--border); }
+  .summary-card { background:var(--surface); border-radius:10px; padding:14px 18px; border:1px solid var(--border); }
+  .summary-card-label { font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .summary-card-value { font-size:26px; font-weight:700; }
+  .summary-card-sub { font-size:11px; color:var(--text-dim); margin-top:3px; }
+
+  .app-layout { display:flex; height:calc(100vh - 220px); }
+  .main-container { display:flex; flex:1; overflow:auto; }
+
+  .sidebar { min-width:300px; max-width:300px; border-right:1px solid var(--border); flex-shrink:0; position:sticky; left:0; z-index:10; background:var(--bg); }
+  .sidebar-header { height:50px; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 14px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); background:var(--surface); }
+
+  .brand-group { border-bottom:1px solid var(--border); }
+  .brand-group.hidden { display:none; }
+  .brand-header { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--surface); cursor:pointer; user-select:none; border-bottom:1px solid var(--border); }
+  .brand-header:hover { background:var(--surface2); }
+  .brand-dot { width:10px; height:10px; border-radius:3px; }
+  .brand-name { font-weight:700; font-size:13px; flex:1; }
+  .brand-chevron { transition:transform .2s; color:var(--text-dim); font-size:10px; }
+  .brand-header.collapsed .brand-chevron { transform:rotate(-90deg); }
+
+  .sku-row { display:flex; align-items:center; height:36px; padding:0 14px 0 32px; border-bottom:1px solid rgba(71,85,105,.3); font-size:12px; color:var(--text-dim); background:var(--bg); cursor:pointer; transition:background .15s; gap:6px; }
+  .sku-row:hover { background:var(--surface); }
+  .sku-row.active { background:var(--surface2); }
+  .sku-row.category-header { font-weight:600; color:var(--text); font-size:11px; text-transform:uppercase; letter-spacing:.5px; height:28px; padding-left:20px; background:rgba(30,41,59,.5); }
+  .sku-row .sku-name { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .sku-sub-row { display:flex; align-items:center; height:30px; padding:0 14px 0 46px; border-bottom:1px solid rgba(71,85,105,.15); font-size:10px; color:var(--text-dim); background:var(--bg); cursor:pointer; transition:background .15s; gap:6px; }
+  .sku-sub-row:hover { background:var(--surface); }
+  .sku-sub-row.active { background:var(--surface2); }
+  .sku-sub-row .sub-label { flex:1; font-style:italic; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sku-sub-row .sub-icon { font-size:9px; margin-right:2px; opacity:.5; }
+
+  .gantt-sub-row { height:30px; border-bottom:1px solid rgba(71,85,105,.15); position:relative; cursor:pointer; }
+  .gantt-sub-row:hover { background:rgba(30,41,59,.2); }
+  .gantt-sub-row.active { background:rgba(30,41,59,.4); }
+  .gantt-sub-row .gantt-bar { height:18px; top:6px; font-size:8px; }
+
+  .inventory-badge { display:inline-flex; align-items:center; padding:1px 7px; border-radius:10px; font-size:9px; font-weight:600; }
+  .inventory-badge.low { background:rgba(239,68,68,.2); color:#FCA5A5; }
+  .inventory-badge.medium { background:rgba(245,158,11,.2); color:#FCD34D; }
+  .inventory-badge.high { background:rgba(16,185,129,.2); color:#6EE7B7; }
+
+  .note-indicator { width:6px; height:6px; border-radius:50%; background:#EC4899; flex-shrink:0; }
+
+  .add-btn { display:flex; align-items:center; justify-content:center; height:30px; margin:4px 14px 4px 32px; border-radius:6px; border:1px dashed var(--border); background:transparent; color:var(--text-dim); cursor:pointer; font-size:11px; transition:all .2s; }
+  .add-btn:hover { background:var(--surface); border-color:var(--text-dim); color:var(--text); }
+
+  .timeline { flex:1; min-width:700px; overflow:visible; }
+  .timeline-header { height:50px; border-bottom:1px solid var(--border); display:flex; background:var(--surface); }
+  .month-col { flex:1; text-align:center; border-right:1px solid rgba(71,85,105,.3); display:flex; flex-direction:column; justify-content:center; }
+  .month-name { font-size:12px; font-weight:600; }
+  .month-year { font-size:9px; color:var(--text-dim); }
+
+  .timeline-body { position:relative; }
+  .month-grid-line { position:absolute; top:0; bottom:0; width:1px; background:rgba(71,85,105,.15); }
+  .today-line { position:absolute; top:0; bottom:0; width:2px; background:#EF4444; z-index:5; }
+  .today-label { position:absolute; top:-18px; transform:translateX(-50%); font-size:9px; color:#EF4444; font-weight:600; white-space:nowrap; }
+
+  .timeline-brand-header { height:40px; border-bottom:1px solid var(--border); background:var(--surface); }
+  .timeline-category-header { height:28px; border-bottom:1px solid rgba(71,85,105,.3); background:rgba(30,41,59,.5); }
+  .timeline-add-row { height:30px; margin:4px 0; }
+
+  .gantt-row { height:36px; border-bottom:1px solid rgba(71,85,105,.3); position:relative; cursor:pointer; }
+  .gantt-row:hover { background:rgba(30,41,59,.3); }
+  .gantt-row.active { background:rgba(30,41,59,.5); }
+
+  .gantt-bar { position:absolute; height:22px; top:7px; border-radius:4px; cursor:grab; transition:opacity .15s; z-index:2; display:flex; align-items:center; padding:0 14px; font-size:9px; font-weight:600; color:white; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .gantt-bar:hover { opacity:.9; z-index:3; }
+  .gantt-bar .drag-handle { position:absolute; top:0; width:12px; height:100%; cursor:ew-resize; z-index:4; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; }
+  .gantt-bar .drag-handle::after { content:''; display:block; width:2px; height:10px; border-left:1px solid rgba(255,255,255,.5); border-right:1px solid rgba(255,255,255,.5); }
+  .gantt-bar .drag-handle.left { left:0; border-radius:4px 0 0 4px; }
+  .gantt-bar .drag-handle.right { right:0; border-radius:0 4px 4px 0; }
+  .gantt-bar:hover .drag-handle { background:rgba(255,255,255,.3); }
+  .gantt-bar.dragging { cursor:ew-resize; opacity:.95; }
+  body.dragging-active { cursor:ew-resize !important; user-select:none; }
+  body.dragging-active * { cursor:ew-resize !important; }
+
+  /* Notes Panel */
+  .notes-panel { width:0; min-width:0; border-left:1px solid var(--border); background:var(--surface); overflow:hidden; transition:width .25s,min-width .25s; flex-shrink:0; }
+  .notes-panel.open { width:340px; min-width:340px; }
+  .notes-inner { width:340px; height:100%; display:flex; flex-direction:column; overflow:hidden; }
+  .notes-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .notes-header h3 { flex:1; font-size:14px; font-weight:700; }
+  .notes-brand-tag { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .notes-close { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:18px; padding:4px; }
+  .notes-close:hover { color:var(--text); }
+  .notes-body { flex:1; overflow-y:auto; padding:16px; }
+  .notes-input-area { padding:12px 16px; border-top:1px solid var(--border); flex-shrink:0; }
+  .notes-input-area textarea { width:100%; height:70px; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:12px; font-family:inherit; resize:none; outline:none; }
+  .notes-input-area textarea:focus { border-color:var(--headchange); }
+  .notes-input-area button { margin-top:8px; width:100%; padding:7px; border-radius:6px; border:none; background:var(--headchange); color:white; font-size:12px; font-weight:600; cursor:pointer; }
+  .notes-input-area button:hover { opacity:.9; }
+
+  .note-entry { padding:10px 12px; background:var(--bg); border-radius:8px; margin-bottom:8px; border:1px solid var(--border); }
+  .note-entry .note-time { font-size:10px; color:var(--text-dim); margin-bottom:4px; }
+  .note-entry .note-text { font-size:12px; line-height:1.5; white-space:pre-wrap; }
+  .note-entry .note-delete { float:right; background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:11px; padding:2px 4px; }
+  .note-entry .note-delete:hover { color:#FCA5A5; }
+
+  .no-notes { text-align:center; color:var(--text-dim); font-size:12px; padding:40px 20px; }
+
+  .notes-toggle { position:fixed; right:16px; bottom:20px; width:44px; height:44px; border-radius:50%; background:var(--headchange); border:none; color:white; font-size:18px; cursor:pointer; z-index:50; box-shadow:0 4px 20px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; }
+  .notes-toggle:hover { transform:scale(1.1); }
+  .notes-toggle.has-selection { background:var(--design); }
+
+  /* Modal */
+  .edit-modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:200; justify-content:center; align-items:center; }
+  .edit-modal.show { display:flex; }
+  .edit-panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; width:500px; max-height:80vh; overflow-y:auto; }
+  .edit-panel h2 { font-size:16px; margin-bottom:2px; }
+  .edit-subtitle { font-size:12px; color:var(--text-dim); margin-bottom:16px; }
+  .edit-field { margin-bottom:14px; }
+  .edit-field label { display:block; font-size:11px; font-weight:600; color:var(--text-dim); margin-bottom:4px; text-transform:uppercase; letter-spacing:.3px; }
+  .edit-field input, .edit-field select { width:100%; padding:7px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:13px; outline:none; }
+  .edit-field input:focus, .edit-field select:focus { border-color:var(--headchange); }
+  .edit-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:18px; }
+  .btn { padding:7px 18px; border-radius:7px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; }
+  .btn-primary { background:var(--headchange); color:white; }
+  .btn-primary:hover { opacity:.9; }
+  .btn-ghost { background:transparent; color:var(--text-dim); border:1px solid var(--border); }
+  .btn-ghost:hover { background:var(--surface2); }
+  .btn-danger { background:#7F1D1D; color:#FCA5A5; border:1px solid #DC2626; }
+  .btn-danger:hover { background:#991B1B; }
+
+  .tooltip { display:none; position:fixed; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; font-size:12px; z-index:1000; max-width:260px; box-shadow:0 8px 30px rgba(0,0,0,.4); pointer-events:none; }
+  .tooltip.show { display:block; }
+  .tooltip-title { font-weight:700; margin-bottom:3px; }
+  .tooltip-brand { font-size:10px; color:var(--text-dim); margin-bottom:6px; }
+  .tooltip-row { display:flex; justify-content:space-between; font-size:11px; padding:1px 0; }
+  .tooltip-label { color:var(--text-dim); }
+  .tooltip-value { font-weight:600; }
+
+  .saved-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#065F46; color:#6EE7B7; padding:8px 20px; border-radius:8px; font-size:12px; font-weight:600; z-index:300; transition:transform .3s; pointer-events:none; }
+  .saved-toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* Global Notes Sidebar */
+  .gn-sidebar { width:0; min-width:0; border-left:1px solid var(--border); background:var(--surface); overflow:hidden; transition:width .3s ease, min-width .3s ease; flex-shrink:0; }
+  .gn-sidebar.open { width:360px; min-width:360px; }
+  .gn-sidebar-inner { width:360px; height:100%; display:flex; flex-direction:column; overflow:hidden; }
+  .gn-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .gn-header h2 { flex:1; font-size:15px; font-weight:700; }
+  .gn-badge { background:var(--headchange); color:white; font-size:9px; font-weight:700; padding:2px 7px; border-radius:10px; }
+  .gn-close { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:20px; padding:4px; }
+  .gn-close:hover { color:var(--text); }
+  .gn-input-area { padding:12px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+  .gn-input-row { display:flex; gap:8px; align-items:flex-end; }
+  .gn-input-row select { padding:7px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:12px; outline:none; min-width:90px; }
+  .gn-input-row select:focus { border-color:var(--headchange); }
+  .gn-input-row textarea { flex:1; height:44px; padding:7px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:11px; font-family:inherit; resize:none; outline:none; }
+  .gn-input-row textarea:focus { border-color:var(--headchange); }
+  .gn-input-row button { padding:7px 14px; border-radius:6px; border:none; background:var(--headchange); color:white; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; height:34px; align-self:flex-end; }
+  .gn-input-row button:hover { opacity:.9; }
+  .gn-body { flex:1; overflow-y:auto; padding:12px 16px; }
+  .gn-entry { padding:10px 12px; background:var(--bg); border-radius:8px; margin-bottom:8px; border:1px solid var(--border); }
+  .gn-entry-header { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .gn-author { font-size:11px; font-weight:700; }
+  .gn-time { font-size:9px; color:var(--text-dim); margin-left:auto; }
+  .gn-delete { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:11px; padding:2px 4px; }
+  .gn-delete:hover { color:#FCA5A5; }
+  .gn-text { font-size:11px; line-height:1.5; white-space:pre-wrap; }
+  .gn-author-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .gn-empty { text-align:center; color:var(--text-dim); font-size:11px; padding:40px 16px; }
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div class="pw-gate" id="pwGate">
+  <div class="pw-box">
+    <div class="curador-logo lg"><span class="c">C</span><span class="u">&Uacute;</span><span class="rest">RADOR</span></div>
+    <div class="pw-line"></div>
+    <div class="pw-subtitle">BRAND IMPLEMENTATION PORTAL</div>
+    <form class="pw-form" onsubmit="return checkPassword(event)">
+      <input type="password" id="pwInput" placeholder="Enter password" autocomplete="off" autofocus>
+      <button type="submit">Enter</button>
+    </form>
+    <div class="pw-error" id="pwError"></div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-top">
+    <div class="curador-logo sm"><span class="c">C</span><span class="u">&Uacute;</span><span class="rest">RADOR</span></div>
+    <span style="color:var(--border);font-size:18px;font-weight:200">|</span>
+    <h1 style="font-size:18px">Brand Rebrand Timeline</h1>
+  </div>
+  <p>Headchange &middot; SafeBet &middot; Bubbles &mdash; Full packaging, digital &amp; retail rollout</p>
+  <div class="controls">
+    <button class="filter-btn active" data-brand="all" onclick="filterBrand('all')">All Brands</button>
+    <button class="filter-btn" data-brand="headchange" onclick="filterBrand('headchange')">Headchange</button>
+    <button class="filter-btn" data-brand="safebet" onclick="filterBrand('safebet')">SafeBet</button>
+    <button class="filter-btn" data-brand="bubbles" onclick="filterBrand('bubbles')">Bubbles</button>
+    <div class="view-toggle">
+      <button class="view-btn active" onclick="setZoom('quarter',this)">Quarter</button>
+      <button class="view-btn" onclick="setZoom('half',this)">6 Mo</button>
+      <button class="view-btn" onclick="setZoom('year',this)">Year</button>
+    </div>
+    <div class="action-btns">
+      <button class="action-btn" onclick="exportJSON()" title="Download data as JSON">Export</button>
+      <button class="action-btn" onclick="importJSON()" title="Import data from JSON">Import</button>
+      <button class="action-btn danger" onclick="resetData()" title="Reset to default data">Reset</button>
+      <button class="action-btn" onclick="toggleGlobalNotes()" title="Team notes" style="background:var(--surface2)">Notes</button>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--inventory)"></div>Inventory</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--design)"></div>Design</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--compliance)"></div>Compliance</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--factory)"></div>Factory</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--landed)"></div>Landed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--website)"></div>Website</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--social)"></div>Social</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--display)"></div>Display</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--sales)"></div>Sales</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--merch)"></div>Merch</div>
+  </div>
+</div>
+
+<div class="summary-cards" id="summaryCards"></div>
+
+<div class="app-layout">
+  <div class="main-container">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+  <div class="notes-panel" id="notesPanel">
+    <div class="notes-inner">
+      <div class="notes-header">
+        <h3 id="notesPanelTitle">Notes</h3>
+        <button class="notes-close" onclick="closeNotes()">&times;</button>
+      </div>
+      <div class="notes-body" id="notesBody"></div>
+      <div class="notes-input-area">
+        <textarea id="noteInput" placeholder="Add a note..."></textarea>
+        <button onclick="addNote()">Add Note</button>
+      </div>
+    </div>
+  </div>
+  <div class="gn-sidebar" id="gnSidebar">
+    <div class="gn-sidebar-inner">
+      <div class="gn-header">
+        <h2>Team Notes</h2>
+        <span class="gn-badge" id="gnCount">0</span>
+        <button class="gn-close" onclick="closeGlobalNotes()">&times;</button>
+      </div>
+      <div class="gn-input-area">
+        <div class="gn-input-row">
+          <select id="gnAuthor">
+            <option value="Sean">Sean</option>
+            <option value="Matt">Matt</option>
+            <option value="Luke">Luke</option>
+            <option value="Peter">Peter</option>
+            <option value="Corey">Corey</option>
+            <option value="Bryan">Bryan</option>
+          </select>
+          <textarea id="gnInput" placeholder="Add a team note..."></textarea>
+          <button onclick="addGlobalNote()">Post</button>
+        </div>
+      </div>
+      <div class="gn-body" id="gnBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="edit-modal" id="editModal"><div class="edit-panel" id="editPanel"></div></div>
+<div class="saved-toast" id="savedToast">Changes saved</div>
+
+<input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ── Password Gate ──
+const PW_HASH = 'curador2026';
+function checkPassword(e) {
+  e.preventDefault();
+  const val = document.getElementById('pwInput').value;
+  if (val === PW_HASH) {
+    document.getElementById('pwGate').classList.add('hidden');
+    sessionStorage.setItem('gantt_auth', '1');
+  } else {
+    document.getElementById('pwError').textContent = 'Incorrect password';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+  return false;
+}
+// Auto-bypass if already authenticated this session
+if (sessionStorage.getItem('gantt_auth') === '1') {
+  document.getElementById('pwGate').classList.add('hidden');
+}
+
+// ── Default Data ──
+const DEFAULT_DATA = {
+  headchange: {
+    packaging: [
+      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-03-15','2026-05-15'],compliance:['2026-05-15','2026-06-30'],factory:['2026-06-15','2026-08-15'],landed:['2026-08-15','2026-09-01']}},
+      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-03-15','2026-05-15'],compliance:['2026-05-15','2026-06-30'],factory:['2026-06-15','2026-08-01'],landed:['2026-08-01','2026-08-15']}},
+      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart Hardware 1', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-03-15','2026-05-01'],compliance:['2026-05-01','2026-06-15'],factory:['2026-06-01','2026-07-30'],landed:['2026-07-30','2026-08-15']}},
+      { sku:'Cart Hardware 2', inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-15','2026-06-15'],compliance:['2026-06-15','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
+    ],
+    brand: [
+      { sku:'Website', color:'website', phases:{ design:['2026-04-01','2026-06-01'], launch:['2026-06-01','2026-07-01'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-01','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-07-30'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-09-01'] }}
+    ]
+  },
+  safebet: {
+    packaging: [
+      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-03-15','2026-05-30'],compliance:['2026-05-30','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart 1 Hardware', inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-04-01','2026-05-30'],compliance:['2026-05-30','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'Cart 2 Hardware', inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-15','2026-06-15'],compliance:['2026-06-15','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}},
+      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}},
+      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
+    ],
+    brand: [
+      { sku:'Website', color:'website', phases:{ design:['2026-04-15','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-09-01'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-07-01','2026-08-15'], launch:['2026-08-15','2026-09-15'] }}
+    ]
+  },
+  bubbles: {
+    packaging: [
+      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-01','2026-06-01'],compliance:['2026-06-01','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
+    ],
+    brand: [
+      { sku:'Website', color:'website', phases:{ design:['2026-05-01','2026-06-30'], launch:['2026-06-30','2026-07-30'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-07-01','2026-08-15'], launch:['2026-08-15','2026-09-15'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-08-30'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-07-15','2026-09-01'], launch:['2026-09-01','2026-10-01'] }}
+    ]
+  }
+};
+
+const BRANDS = {
+  headchange: { name:'Headchange', color:'#7C3AED' },
+  safebet: { name:'SafeBet', color:'#059669' },
+  bubbles: { name:'Bubbles', color:'#2563EB' }
+};
+
+const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6' };
+const BRAND_COLORS = ['website','social','display','sales','merch'];
+const BRAND_SUB_PHASES = { design: '#EC4899', launch: '#10B981' };
+
+// ── State ──
+let projectData = loadData();
+let notesData = loadNotes();
+let currentBrand = 'all';
+let currentZoom = 'quarter';
+let collapsedBrands = {};
+let selectedItem = null; // {brand, type, idx}
+let dragState = null;
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('gantt_project_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      // Restore any missing default brand items (e.g. accidentally deleted)
+      Object.entries(DEFAULT_DATA).forEach(([bk, def]) => {
+        if (!data[bk]) { data[bk] = JSON.parse(JSON.stringify(def)); return; }
+        def.brand.forEach(defItem => {
+          const exists = data[bk].brand.some(b => b.sku === defItem.sku);
+          if (!exists) data[bk].brand.push(JSON.parse(JSON.stringify(defItem)));
+        });
+      });
+      return data;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function loadNotes() {
+  try {
+    const saved = localStorage.getItem('gantt_notes');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return {};
+}
+
+function saveData() {
+  localStorage.setItem('gantt_project_data', JSON.stringify(projectData));
+  showToast('Changes saved');
+}
+
+function saveNotes() {
+  localStorage.setItem('gantt_notes', JSON.stringify(notesData));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('savedToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+function noteKey(brand, type, idx) { return `${brand}__${type}__${idx}`; }
+function hasNotes(brand, type, idx) { const k = noteKey(brand,type,idx); return notesData[k] && notesData[k].length > 0; }
+
+// ── Timeline helpers ──
+function getMonthRange() {
+  const r = { quarter:{start:new Date(2026,2,1),months:10}, half:{start:new Date(2026,2,1),months:12}, year:{start:new Date(2026,0,1),months:16} };
+  return r[currentZoom];
+}
+function dateToPercent(ds) {
+  const {start,months}=getMonthRange(), d=new Date(ds), total=months*30.44*864e5;
+  return Math.max(0,Math.min(100,(d-start)/total*100));
+}
+function percentToDate(pct) {
+  const {start,months}=getMonthRange(), total=months*30.44*864e5;
+  const d = new Date(start.getTime() + (pct/100)*total);
+  return d.toISOString().split('T')[0];
+}
+function formatDate(ds) { return new Date(ds+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function invMonths(item) { return item.inventory ? Math.round(item.inventory.qty/item.inventory.runRate) : 0; }
+function invStatus(m) { return m<=3?'low':m<=5?'medium':'high'; }
+
+// ── Render ──
+function render() {
+  renderSummary();
+  renderSidebar();
+  renderTimeline();
+  renderNotesPanel();
+}
+
+function renderSummary() {
+  let totalSKUs=0, doneDesign=0, lowInv=0, brandItems=0;
+  const today=new Date();
+  Object.entries(projectData).forEach(([b,d])=>{
+    if(currentBrand!=='all'&&currentBrand!==b) return;
+    d.packaging.forEach(item=>{ totalSKUs++; if(today>new Date(item.phases.design[1])) doneDesign++; if(invMonths(item)<=3) lowInv++; });
+    brandItems+=d.brand.length;
+  });
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="summary-card"><div class="summary-card-label">Packaging SKUs</div><div class="summary-card-value">${totalSKUs}</div><div class="summary-card-sub">${currentBrand==='all'?'3 brands':'1 brand'}</div></div>
+    <div class="summary-card"><div class="summary-card-label">Design Complete</div><div class="summary-card-value">${doneDesign}/${totalSKUs}</div><div class="summary-card-sub">${totalSKUs-doneDesign} in progress</div></div>
+    <div class="summary-card"><div class="summary-card-label">Low Inventory</div><div class="summary-card-value" style="color:#FCA5A5">${lowInv}</div><div class="summary-card-sub">&le;3 months runway</div></div>
+    <div class="summary-card"><div class="summary-card-label">Brand Items</div><div class="summary-card-value">${brandItems}</div><div class="summary-card-sub">Website, social, display, sales, merch</div></div>`;
+}
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  let h = '<div class="sidebar-header">Task / SKU</div>';
+  Object.entries(projectData).forEach(([bk,data])=>{
+    const brand=BRANDS[bk], hidden=currentBrand!=='all'&&currentBrand!==bk, col=collapsedBrands[bk];
+    if(hidden) return;
+    h+=`<div class="brand-group" data-brand="${bk}">`;
+    h+=`<div class="brand-header ${col?'collapsed':''}" onclick="toggleBrand('${bk}')"><div class="brand-dot" style="background:${brand.color}"></div><span class="brand-name">${brand.name}</span><span class="brand-chevron">&#9662;</span></div>`;
+    if(!col){
+      h+=`<div class="sku-row category-header"><span class="sku-name">Packaging & Hardware</span></div>`;
+      data.packaging.forEach((item,i)=>{
+        const m=invMonths(item), st=invStatus(m), act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===i;
+        const ni = hasNotes(bk,'packaging',i);
+        h+=`<div class="sku-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
+        h+=`<div class="sku-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Landed</span></div>`;
+      });
+      h+=`<button class="add-btn" onclick="addSKU('${bk}','packaging')">+ Add Packaging SKU</button>`;
+      h+=`<div class="sku-row category-header"><span class="sku-name">Brand & Marketing</span></div>`;
+      data.brand.forEach((item,i)=>{
+        const act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='brand'&&selectedItem.idx===i;
+        const ni = hasNotes(bk,'brand',i);
+        h+=`<div class="sku-row ${act?'active':''}" onclick="selectItem('${bk}','brand',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}</div>`;
+      });
+      h+=`<button class="add-btn" onclick="addSKU('${bk}','brand')">+ Add Brand Item</button>`;
+    }
+    h+='</div>';
+  });
+  sb.innerHTML=h;
+}
+
+function renderTimeline() {
+  const tl=document.getElementById('timeline'), {start,months}=getMonthRange();
+  let hdr='<div class="timeline-header">';
+  for(let i=0;i<months;i++){const d=new Date(start.getFullYear(),start.getMonth()+i,1);hdr+=`<div class="month-col"><div class="month-name">${d.toLocaleDateString('en-US',{month:'short'})}</div><div class="month-year">${d.getFullYear()}</div></div>`;}
+  hdr+='</div>';
+
+  let body='<div class="timeline-body" id="timelineBody">';
+  for(let i=0;i<=months;i++) body+=`<div class="month-grid-line" style="left:${(i/months)*100}%"></div>`;
+  const tp=dateToPercent(new Date().toISOString().split('T')[0]);
+  if(tp>0&&tp<100) body+=`<div class="today-line" style="left:${tp}%"><div class="today-label">TODAY</div></div>`;
+
+  Object.entries(projectData).forEach(([bk,data])=>{
+    if(currentBrand!=='all'&&currentBrand!==bk) return;
+    const col=collapsedBrands[bk];
+    body+=`<div class="timeline-brand-header"></div>`;
+    if(!col){
+      body+=`<div class="timeline-category-header"></div>`;
+      data.packaging.forEach((item,idx)=>{
+        const act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging'&&selectedItem.idx===idx;
+        // Row 1: Inventory only
+        const invDates = item.phases.inventory;
+        if(invDates){
+          const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
+          body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
+          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
+            onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','Inventory (${item.inventory?item.inventory.qty.toLocaleString():''} units @ ${item.inventory?item.inventory.runRate.toLocaleString():''}${item.inventory?item.inventory.unit:''})','${invDates[0]}','${invDates[1]}')" onmouseleave="hideTip()"
+            onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'inventory')"
+            ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+            <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','left')"></div>
+            ${w>7?'Inventory':''}
+            <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
+          </div></div>`;
+        }
+        // Row 2: Design → Compliance → Factory → Landed
+        body+=`<div class="gantt-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
+        ['design','compliance','factory','landed'].forEach(ph=>{
+          const dates=item.phases[ph];
+          if(!dates) return;
+          const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l,c=PHASE_COLORS[ph],label=ph.charAt(0).toUpperCase()+ph.slice(1);
+          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="${ph}"
+            onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','${label}','${dates[0]}','${dates[1]}')" onmouseleave="hideTip()"
+            onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'${ph}')"
+            ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+            <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','left')"></div>
+            ${w>7?label:''}
+            <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'${ph}','right')"></div>
+          </div>`;
+        });
+        body+='</div>';
+      });
+      body+=`<div class="timeline-add-row"></div>`;
+      body+=`<div class="timeline-category-header"></div>`;
+      data.brand.forEach((item,idx)=>{
+        const act=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='brand'&&selectedItem.idx===idx;
+        body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','brand',${idx})">`;
+        Object.entries(item.phases).forEach(([ph,dates])=>{
+          const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l;
+          const c = ph==='design' ? BRAND_SUB_PHASES.design : BRAND_SUB_PHASES.launch;
+          const label = ph.charAt(0).toUpperCase()+ph.slice(1);
+          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="brand" data-idx="${idx}" data-phase="${ph}"
+            onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','${item.sku} - ${label}','${dates[0]}','${dates[1]}')" onmouseleave="hideTip()"
+            onmousedown="startBarDrag(event,'${bk}','brand',${idx},'${ph}')"
+            ondblclick="event.stopPropagation();editItem('${bk}','brand',${idx})">
+            <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','brand',${idx},'${ph}','left')"></div>
+            ${w>7?label:''}
+            <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','brand',${idx},'${ph}','right')"></div>
+          </div>`;
+        });
+        body+=`</div>`;
+      });
+      body+=`<div class="timeline-add-row"></div>`;
+    }
+  });
+  body+='</div>';
+  tl.innerHTML=hdr+body;
+}
+
+// ── Notes Panel ──
+function selectItem(brand, type, idx) {
+  selectedItem = {brand, type, idx};
+  openNotes();
+  render();
+}
+
+function openNotes() {
+  document.getElementById('notesPanel').classList.add('open');
+  renderNotesPanel();
+}
+
+function closeNotes() {
+  document.getElementById('notesPanel').classList.remove('open');
+  selectedItem = null;
+  render();
+}
+
+function renderNotesPanel() {
+  if (!selectedItem) {
+    document.getElementById('notesPanelTitle').textContent = 'Notes';
+    document.getElementById('notesBody').innerHTML = '<div class="no-notes">Click any item to view notes</div>';
+    return;
+  }
+  const {brand,type,idx} = selectedItem;
+  const item = type==='packaging' ? projectData[brand].packaging[idx] : projectData[brand].brand[idx];
+  if (!item) { selectedItem=null; return renderNotesPanel(); }
+  const b = BRANDS[brand];
+  document.getElementById('notesPanelTitle').innerHTML = `${item.sku} <span class="notes-brand-tag" style="background:${b.color}22;color:${b.color}">${b.name}</span>`;
+
+  const key = noteKey(brand,type,idx);
+  const notes = notesData[key] || [];
+  let html = '';
+  if (notes.length === 0) {
+    html = '<div class="no-notes">No notes yet. Add one below.</div>';
+  } else {
+    notes.slice().reverse().forEach((n,ri) => {
+      const i = notes.length - 1 - ri;
+      html += `<div class="note-entry">
+        <button class="note-delete" onclick="deleteNote('${key}',${i})">&times;</button>
+        <div class="note-time">${new Date(n.time).toLocaleString()}</div>
+        <div class="note-text">${escapeHtml(n.text)}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('notesBody').innerHTML = html;
+}
+
+function addNote() {
+  if (!selectedItem) return;
+  const text = document.getElementById('noteInput').value.trim();
+  if (!text) return;
+  const key = noteKey(selectedItem.brand, selectedItem.type, selectedItem.idx);
+  if (!notesData[key]) notesData[key] = [];
+  notesData[key].push({ text, time: new Date().toISOString() });
+  saveNotes();
+  document.getElementById('noteInput').value = '';
+  render();
+}
+
+function deleteNote(key, idx) {
+  if (notesData[key]) {
+    notesData[key].splice(idx, 1);
+    if (notesData[key].length === 0) delete notesData[key];
+    saveNotes();
+    render();
+  }
+}
+
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Drag to resize bars ──
+function startDrag(e, brand, type, idx, phase, side) {
+  e.preventDefault();
+  e.stopPropagation();
+  hideTip();
+  const timelineBody = document.getElementById('timelineBody');
+  const rect = timelineBody.getBoundingClientRect();
+
+  // For middle drag, capture the original dates and click offset
+  let origStart, origEnd, clickPct;
+  clickPct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  if (type === 'packaging') {
+    origStart = projectData[brand].packaging[idx].phases[phase][0];
+    origEnd = projectData[brand].packaging[idx].phases[phase][1];
+  } else {
+    origStart = projectData[brand].brand[idx].phases[phase][0];
+    origEnd = projectData[brand].brand[idx].phases[phase][1];
+  }
+
+  dragState = { brand, type, idx, phase, side, rect, startX: e.clientX, origStart, origEnd, clickPct };
+  document.body.classList.add('dragging-active');
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', endDrag);
+}
+
+// Start a middle-drag (move entire bar) when mousedown on bar body (not handles)
+function startBarDrag(e, brand, type, idx, phase) {
+  e.preventDefault();
+  e.stopPropagation();
+  hideTip();
+  const timelineBody = document.getElementById('timelineBody');
+  const rect = timelineBody.getBoundingClientRect();
+  const clickPct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+
+  let origStart, origEnd;
+  if (type === 'packaging') {
+    origStart = projectData[brand].packaging[idx].phases[phase][0];
+    origEnd = projectData[brand].packaging[idx].phases[phase][1];
+  } else {
+    origStart = projectData[brand].brand[idx].phases[phase][0];
+    origEnd = projectData[brand].brand[idx].phases[phase][1];
+  }
+
+  dragState = { brand, type, idx, phase, side: 'middle', rect, startX: e.clientX, origStart, origEnd, clickPct };
+  document.body.classList.add('dragging-active');
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', endDrag);
+}
+
+function onDrag(e) {
+  if (!dragState) return;
+  const { brand, type, idx, phase, side, rect, origStart, origEnd, clickPct } = dragState;
+  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+
+  if (side === 'middle') {
+    // Shift both dates by the delta
+    const deltaPct = pct - clickPct;
+    const origStartPct = dateToPercent(origStart);
+    const origEndPct = dateToPercent(origEnd);
+    let newStartPct = origStartPct + deltaPct;
+    let newEndPct = origEndPct + deltaPct;
+    // Clamp
+    if (newStartPct < 0) { newEndPct -= newStartPct; newStartPct = 0; }
+    if (newEndPct > 100) { newStartPct -= (newEndPct - 100); newEndPct = 100; }
+    const newStart = percentToDate(newStartPct);
+    const newEnd = percentToDate(newEndPct);
+    const item = type === 'packaging' ? projectData[brand].packaging[idx] : projectData[brand].brand[idx];
+    item.phases[phase][0] = newStart;
+    item.phases[phase][1] = newEnd;
+  } else {
+    const newDate = percentToDate(pct);
+    const item = type === 'packaging' ? projectData[brand].packaging[idx] : projectData[brand].brand[idx];
+    const ph = item.phases[phase];
+    if (side === 'left' && newDate < ph[1]) ph[0] = newDate;
+    else if (side === 'right' && newDate > ph[0]) ph[1] = newDate;
+  }
+  renderTimeline();
+  renderSidebar();
+}
+
+function endDrag() {
+  if (dragState) { saveData(); dragState = null; }
+  document.body.classList.remove('dragging-active');
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+}
+
+// ── Edit Modal ──
+function editItem(brand, type, idx) {
+  const modal = document.getElementById('editModal');
+  const panel = document.getElementById('editPanel');
+  const b = BRANDS[brand];
+  const item = type==='packaging' ? projectData[brand].packaging[idx] : projectData[brand].brand[idx];
+
+  let fields = `<div class="edit-field"><label>Name</label><input type="text" id="edit-name" value="${escapeHtml(item.sku)}"></div>`;
+
+  if (type === 'packaging') {
+    fields += `
+      <div style="display:flex;gap:10px"><div class="edit-field" style="flex:1"><label>Inventory (units)</label><input type="number" id="edit-inv-qty" value="${item.inventory.qty}"></div>
+      <div class="edit-field" style="flex:1"><label>Run Rate (/mo)</label><input type="number" id="edit-inv-rate" value="${item.inventory.runRate}"></div></div>
+      <hr style="border-color:var(--border);margin:14px 0">`;
+    Object.entries(item.phases).forEach(([ph,dates])=>{
+      const label=ph.charAt(0).toUpperCase()+ph.slice(1);
+      fields+=`<div style="display:flex;gap:10px"><div class="edit-field" style="flex:1"><label>${label} Start</label><input type="date" id="edit-${ph}-start" value="${dates[0]}"></div><div class="edit-field" style="flex:1"><label>${label} End</label><input type="date" id="edit-${ph}-end" value="${dates[1]}"></div></div>`;
+    });
+  } else {
+    fields += `
+      <div class="edit-field"><label>Color Category</label><select id="edit-color">${BRAND_COLORS.map(p=>`<option value="${p}" ${item.color===p?'selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}</select></div>
+      <hr style="border-color:var(--border);margin:14px 0">`;
+    Object.entries(item.phases).forEach(([ph,dates])=>{
+      const label=ph.charAt(0).toUpperCase()+ph.slice(1);
+      fields+=`<div style="display:flex;gap:10px"><div class="edit-field" style="flex:1"><label>${label} Start</label><input type="date" id="edit-${ph}-start" value="${dates[0]}"></div><div class="edit-field" style="flex:1"><label>${label} End</label><input type="date" id="edit-${ph}-end" value="${dates[1]}"></div></div>`;
+    });
+  }
+
+  panel.innerHTML = `<h2>Edit Item</h2><div class="edit-subtitle" style="color:${b.color}">${b.name}</div>${fields}
+    <div class="edit-actions"><button class="btn btn-danger" onclick="deleteItem('${brand}','${type}',${idx})">Delete</button><div style="flex:1"></div><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEdit('${brand}','${type}',${idx})">Save</button></div>`;
+  modal.classList.add('show');
+}
+
+function saveEdit(brand, type, idx) {
+  const name = document.getElementById('edit-name').value.trim();
+  if (type === 'packaging') {
+    const item = projectData[brand].packaging[idx];
+    item.sku = name || item.sku;
+    item.inventory.qty = parseInt(document.getElementById('edit-inv-qty').value)||0;
+    item.inventory.runRate = parseInt(document.getElementById('edit-inv-rate').value)||1;
+    Object.keys(item.phases).forEach(ph => {
+      item.phases[ph][0] = document.getElementById(`edit-${ph}-start`).value;
+      item.phases[ph][1] = document.getElementById(`edit-${ph}-end`).value;
+    });
+  } else {
+    const item = projectData[brand].brand[idx];
+    item.sku = name || item.sku;
+    item.color = document.getElementById('edit-color').value;
+    Object.keys(item.phases).forEach(ph => {
+      item.phases[ph][0] = document.getElementById(`edit-${ph}-start`).value;
+      item.phases[ph][1] = document.getElementById(`edit-${ph}-end`).value;
+    });
+  }
+  saveData();
+  closeModal();
+  render();
+}
+
+function deleteItem(brand, type, idx) {
+  if (!confirm(`Delete "${type==='packaging'?projectData[brand].packaging[idx].sku:projectData[brand].brand[idx].sku}"?`)) return;
+  // Clean up notes
+  const key = noteKey(brand, type, idx);
+  delete notesData[key];
+  // Shift note keys for items after deleted one
+  const arr = projectData[brand][type];
+  for (let i = idx + 1; i < arr.length; i++) {
+    const oldKey = noteKey(brand, type, i);
+    const newKey = noteKey(brand, type, i - 1);
+    if (notesData[oldKey]) { notesData[newKey] = notesData[oldKey]; delete notesData[oldKey]; }
+  }
+  arr.splice(idx, 1);
+  saveNotes();
+  saveData();
+  if (selectedItem && selectedItem.brand === brand && selectedItem.type === type && selectedItem.idx === idx) selectedItem = null;
+  closeModal();
+  render();
+}
+
+function addSKU(brand, type) {
+  if (type === 'packaging') {
+    const today = new Date().toISOString().split('T')[0];
+    const m3 = new Date(Date.now()+90*864e5).toISOString().split('T')[0];
+    const m4 = new Date(Date.now()+120*864e5).toISOString().split('T')[0];
+    const m5 = new Date(Date.now()+150*864e5).toISOString().split('T')[0];
+    const m6 = new Date(Date.now()+180*864e5).toISOString().split('T')[0];
+    projectData[brand].packaging.push({
+      sku: 'New SKU',
+      inventory: { qty: 5000, runRate: 1000, unit: '/mo' },
+      phases: {
+        inventory: [today, m6],
+        design: [today, m3],
+        compliance: [m3, m4],
+        factory: [m4, m5],
+        landed: [m5, m6]
+      }
+    });
+  } else {
+    const today = new Date().toISOString().split('T')[0];
+    const m3 = new Date(Date.now()+90*864e5).toISOString().split('T')[0];
+    const m2 = new Date(Date.now()+60*864e5).toISOString().split('T')[0];
+    projectData[brand].brand.push({ sku: 'New Item', color: 'website', phases: { design: [today, m2], launch: [m2, m3] } });
+  }
+  saveData();
+  render();
+  // Open edit modal for the new item
+  const idx = projectData[brand][type].length - 1;
+  editItem(brand, type, idx);
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('show'); }
+
+// ── Data management ──
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({ projectData, notesData }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'brand-rebrand-gantt-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importJSON() { document.getElementById('importInput').click(); }
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.projectData) { projectData = data.projectData; saveData(); }
+      if (data.notesData) { notesData = data.notesData; saveNotes(); }
+      render();
+      showToast('Data imported');
+    } catch(err) { alert('Invalid JSON file'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function resetData() {
+  if (!confirm('Reset all data to defaults? This cannot be undone.')) return;
+  projectData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  notesData = {};
+  localStorage.removeItem('gantt_project_data');
+  localStorage.removeItem('gantt_notes');
+  selectedItem = null;
+  render();
+  showToast('Data reset to defaults');
+}
+
+// ── Global Team Notes ──
+const TEAM_COLORS = { Sean:'#7C3AED', Matt:'#059669', Luke:'#2563EB', Peter:'#F59E0B', Corey:'#EC4899', Bryan:'#F97316' };
+
+function loadGlobalNotes() {
+  try { const s=localStorage.getItem('gantt_global_notes'); if(s) return JSON.parse(s); } catch(e){}
+  return [];
+}
+let globalNotes = loadGlobalNotes();
+
+function saveGlobalNotes() { localStorage.setItem('gantt_global_notes', JSON.stringify(globalNotes)); }
+
+function toggleGlobalNotes() {
+  const sb = document.getElementById('gnSidebar');
+  sb.classList.toggle('open');
+  if (sb.classList.contains('open')) renderGlobalNotes();
+}
+
+function closeGlobalNotes() { document.getElementById('gnSidebar').classList.remove('open'); }
+
+function renderGlobalNotes() {
+  const body = document.getElementById('gnBody');
+  document.getElementById('gnCount').textContent = globalNotes.length;
+  if (globalNotes.length === 0) {
+    body.innerHTML = '<div class="gn-empty">No team notes yet. Add one above.</div>';
+    return;
+  }
+  let html = '';
+  globalNotes.slice().reverse().forEach((n, ri) => {
+    const i = globalNotes.length - 1 - ri;
+    const color = TEAM_COLORS[n.author] || '#94A3B8';
+    html += `<div class="gn-entry">
+      <div class="gn-entry-header">
+        <div class="gn-author-dot" style="background:${color}"></div>
+        <span class="gn-author" style="color:${color}">${escapeHtml(n.author)}</span>
+        <span class="gn-time">${new Date(n.time).toLocaleString()}</span>
+        <button class="gn-delete" onclick="deleteGlobalNote(${i})">&times;</button>
+      </div>
+      <div class="gn-text">${escapeHtml(n.text)}</div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+function addGlobalNote() {
+  const author = document.getElementById('gnAuthor').value;
+  const text = document.getElementById('gnInput').value.trim();
+  if (!text) return;
+  globalNotes.push({ author, text, time: new Date().toISOString() });
+  saveGlobalNotes();
+  document.getElementById('gnInput').value = '';
+  renderGlobalNotes();
+}
+
+function deleteGlobalNote(idx) {
+  globalNotes.splice(idx, 1);
+  saveGlobalNotes();
+  renderGlobalNotes();
+}
+
+document.getElementById('gnInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addGlobalNote(); }
+});
+
+// ── UI interactions ──
+function filterBrand(brand) {
+  currentBrand=brand;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.brand===brand));
+  render();
+}
+function setZoom(zoom,el) {
+  currentZoom=zoom;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function toggleBrand(bk) { collapsedBrands[bk]=!collapsedBrands[bk]; render(); }
+
+function showTip(e,bk,sku,phase,s,en) {
+  const tip=document.getElementById('tooltip'), brand=BRANDS[bk];
+  const item=projectData[bk].packaging.find(p=>p.sku===sku);
+  let inv='';
+  if(item&&item.inventory){const m=invMonths(item);inv=`<div class="tooltip-row"><span class="tooltip-label">Inventory</span><span class="tooltip-value">${item.inventory.qty.toLocaleString()}</span></div><div class="tooltip-row"><span class="tooltip-label">Run Rate</span><span class="tooltip-value">${item.inventory.runRate.toLocaleString()} ${item.inventory.unit}</span></div><div class="tooltip-row"><span class="tooltip-label">Runway</span><span class="tooltip-value">${m} months</span></div>`;}
+  tip.innerHTML=`<div class="tooltip-title">${sku}</div><div class="tooltip-brand" style="color:${brand.color}">${brand.name} &mdash; ${phase}</div><div class="tooltip-row"><span class="tooltip-label">Start</span><span class="tooltip-value">${formatDate(s)}</span></div><div class="tooltip-row"><span class="tooltip-label">End</span><span class="tooltip-value">${formatDate(en)}</span></div>${inv}`;
+  tip.classList.add('show');
+  positionTip(e);
+}
+function hideTip() { document.getElementById('tooltip').classList.remove('show'); }
+function positionTip(e) {
+  const tip=document.getElementById('tooltip');
+  let x=e.clientX+14,y=e.clientY-16;
+  if(x+260>window.innerWidth) x=e.clientX-270;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+document.addEventListener('mousemove',e=>{const t=document.getElementById('tooltip');if(t.classList.contains('show'))positionTip(e);});
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+// Enter key to add note
+document.getElementById('noteInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addNote(); }
+});
+
+render();
+</script>
+</body>
+</html>
