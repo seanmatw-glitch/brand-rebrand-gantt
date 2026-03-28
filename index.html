@@ -289,6 +289,10 @@
     <div class="legend-item"><div class="legend-dot" style="background:var(--compliance)"></div>Compliance</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--factory)"></div>Factory</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--landed)"></div>Landed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>Strategy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0F6E56"></div>Brand Evo</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6B3FA0"></div>Photo</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2D6A9F"></div>Expansion</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--website)"></div>Website</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--social)"></div>Social</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--display)"></div>Display</div>
@@ -382,6 +386,11 @@ const DEFAULT_DATA = {
       { sku:'Cart Hardware 3', inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-07-30'],factory:['2026-07-15','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
     ],
     brand: [
+      { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-01','2026-04-22'] }},
+      { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-04-15','2026-05-06'] }},
+      { sku:'Photography', color:'photo', phases:{ design:['2026-06-03','2026-07-22'] }},
+      { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-07-22','2026-08-05'] }},
+      { sku:'Development', color:'dev', phases:{ design:['2026-06-03','2026-06-24'] }},
       { sku:'Website', color:'website', phases:{ design:['2026-04-29','2026-06-03'], launch:['2026-06-03','2026-07-01'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-01','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
@@ -398,6 +407,10 @@ const DEFAULT_DATA = {
       { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-07-15'],factory:['2026-07-01','2026-08-30'],landed:['2026-08-30','2026-09-15']}}
     ],
     brand: [
+      { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-29','2026-05-20'] }},
+      { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-05-06','2026-06-03'] }},
+      { sku:'Photography', color:'photo', phases:{ design:['2026-06-03','2026-07-22'] }},
+      { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-08-05','2026-08-12'] }},
       { sku:'Website', color:'website', phases:{ design:['2026-06-03','2026-07-08'], launch:['2026-07-08','2026-08-01'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-09-01'] }},
@@ -410,6 +423,10 @@ const DEFAULT_DATA = {
       { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-08-15'],factory:['2026-08-01','2026-09-15'],landed:['2026-09-15','2026-10-01']}}
     ],
     brand: [
+      { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-05-27','2026-06-17'] }},
+      { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-06-10','2026-07-01'] }},
+      { sku:'Photography', color:'photo', phases:{ design:['2026-07-01','2026-08-19'] }},
+      { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-08-19','2026-09-02'] }},
       { sku:'Website', color:'website', phases:{ design:['2026-06-24','2026-07-22'], launch:['2026-07-22','2026-08-15'] }},
       { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
       { sku:'In-Store Display', color:'display', phases:{ design:['2026-07-01','2026-08-15'], launch:['2026-08-15','2026-09-15'] }},
@@ -425,7 +442,7 @@ const BRANDS = {
   bubbles: { name:'Bubbles', color:'#2563EB' }
 };
 
-const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6' };
+const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6', strategy:'#185FA5', brandev:'#0F6E56', photo:'#6B3FA0', expansion:'#2D6A9F', dev:'#1A5C7A' };
 const BRAND_COLORS = ['website','social','display','sales','merch'];
 const BRAND_SUB_PHASES = { design: '#EC4899', launch: '#10B981' };
 
