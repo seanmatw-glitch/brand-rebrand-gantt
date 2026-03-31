@@ -88,7 +88,7 @@
   .main-container { display:flex; flex:1; overflow:auto; }
 
   .sidebar { min-width:300px; max-width:300px; border-right:1px solid var(--border); flex-shrink:0; position:sticky; left:0; z-index:10; background:var(--bg); }
-  .sidebar-header { height:50px; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 14px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); background:var(--surface); }
+  .sidebar-header { height:50px; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 14px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); background:var(--surface); position:sticky; top:0; z-index:15; }
 
   .brand-group { border-bottom:1px solid var(--border); }
   .brand-group.hidden { display:none; }
@@ -138,7 +138,7 @@
   .add-btn:hover { background:var(--surface); border-color:var(--text-dim); color:var(--text); }
 
   .timeline { flex:1; min-width:700px; overflow:visible; }
-  .timeline-header { height:50px; border-bottom:1px solid var(--border); display:flex; background:var(--surface); }
+  .timeline-header { height:50px; border-bottom:1px solid var(--border); display:flex; background:var(--surface); position:sticky; top:0; z-index:50; }
   .month-col { flex:1; text-align:center; border-right:1px solid rgba(71,85,105,.3); display:flex; flex-direction:column; justify-content:center; }
   .month-name { font-size:12px; font-weight:600; }
   .month-year { font-size:9px; color:var(--text-dim); }
@@ -184,10 +184,18 @@
   .notes-input-area button:hover { opacity:.9; }
 
   .note-entry { padding:10px 12px; background:var(--bg); border-radius:8px; margin-bottom:8px; border:1px solid var(--border); }
-  .note-entry .note-time { font-size:10px; color:var(--text-dim); margin-bottom:4px; }
+  .note-entry .note-header { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .note-entry .note-author-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .note-entry .note-author { font-size:11px; font-weight:700; }
+  .note-entry .note-time { font-size:10px; color:var(--text-dim); margin-left:auto; }
   .note-entry .note-text { font-size:12px; line-height:1.5; white-space:pre-wrap; }
-  .note-entry .note-delete { float:right; background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:11px; padding:2px 4px; }
+  .note-entry .note-actions { display:flex; gap:8px; margin-top:6px; }
+  .note-entry .note-action-btn { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:10px; padding:0; }
+  .note-entry .note-action-btn:hover { color:var(--text); }
+  .note-entry .note-delete { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:10px; padding:0; }
   .note-entry .note-delete:hover { color:#FCA5A5; }
+  .note-replies { margin-left:16px; border-left:2px solid var(--border); padding-left:10px; margin-top:6px; }
+  .note-replies .note-entry { margin-bottom:6px; padding:8px 10px; }
 
   .no-notes { text-align:center; color:var(--text-dim); font-size:12px; padding:40px 20px; }
 
@@ -328,8 +336,17 @@
       </div>
       <div class="notes-body" id="notesBody"></div>
       <div class="notes-input-area">
+        <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:8px">
+          <select id="noteAuthor" style="padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;min-width:90px">
+            <option value="Sean">Sean</option><option value="Matt">Matt</option><option value="Luke">Luke</option>
+            <option value="Peter">Peter</option><option value="Corey">Corey</option><option value="Bryan">Bryan</option>
+          </select>
+          <div id="replyingTo" style="display:none;font-size:10px;color:var(--text-dim);flex:1">
+            Replying to <span id="replyingName"></span> <button onclick="cancelReply()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:10px">&times;</button>
+          </div>
+        </div>
         <textarea id="noteInput" placeholder="Add a note..."></textarea>
-        <button onclick="addNote()">Add Note</button>
+        <button onclick="addNote()">Post</button>
       </div>
     </div>
   </div>
@@ -352,6 +369,9 @@
           </select>
           <textarea id="gnInput" placeholder="Add a team note..."></textarea>
           <button onclick="addGlobalNote()">Post</button>
+        </div>
+        <div id="gnReplyIndicator" style="display:none;font-size:10px;color:var(--text-dim);margin-top:4px">
+          Replying to <span id="gnReplyName"></span> <button onclick="cancelGlobalReply()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:10px">&times; cancel</button>
         </div>
       </div>
       <div class="gn-body" id="gnBody"></div>
@@ -390,60 +410,114 @@ if (sessionStorage.getItem('gantt_auth') === '1') {
 const DEFAULT_DATA = {
   headchange: {
     packaging: [
-      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Jar', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 1', hw:true, inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 2', hw:true, inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
-      { sku:'Cart Hardware 3', hw:true, inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+      { sku:'Concentrate Box', inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:12000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Jar Box', inventory:{qty:10000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-30'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:10000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-30'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Jars', inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+          { sku:'Jar Lid Sticker', sub:true, inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}},
+          { sku:'Side Wrap', sub:true, inventory:{qty:8000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-15'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Cart Packaging', inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:15000,runRate:3000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Cart Hardware 1', hw:true, inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Cart Hardware 2', hw:true, inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:6000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-09-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]},
+      { sku:'Cart Hardware 3', hw:true, inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:4000,runRate:800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-04-29','2026-05-20'],compliance:['2026-05-20','2026-08-18'],factory:['2026-08-18','2026-09-17'],photo:['2026-09-17','2026-10-08'],launch:['2026-10-08','2026-10-22']}}
+        ]}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-01','2026-04-22'] }},
       { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-04-15','2026-05-06'] }},
-      { sku:'Photography', color:'photo', phases:{ design:['2026-06-03','2026-10-08'] }},
+      { sku:'Photography', color:'photo', phases:{ photo:['2026-09-17','2026-10-08'] }},
       { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-07-22','2026-08-05'] }},
       { sku:'Development', color:'dev', phases:{ design:['2026-06-03','2026-06-24'] }},
-      { sku:'Website', color:'website', phases:{ design:['2026-04-29','2026-06-03'], launch:['2026-10-08','2026-10-22'] }},
-      { sku:'Social Media', color:'social', phases:{ design:['2026-05-01','2026-06-15'], launch:['2026-06-15','2026-07-15'] }},
-      { sku:'In-Store Display', color:'display', phases:{ design:['2026-08-18','2026-09-17'], launch:['2026-09-17','2026-10-01'] }},
-      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-07-30'] }},
-      { sku:'Merch', color:'merch', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-09-01'] }}
+      { sku:'Website', color:'website', phases:{ design:['2026-04-29','2026-06-03'], launch:['2026-10-08','2026-10-29'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-01','2026-06-15'], launch:['2026-10-08','2026-10-29'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-05-15','2026-08-01'], factory:['2026-10-22','2026-11-21'], launch:['2026-11-21','2026-12-05'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-10-08','2026-10-29'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-06-15','2026-08-01'], factory:['2026-10-08','2026-11-05'], launch:['2026-11-05','2026-11-19'] }}
     ]
   },
   safebet: {
     packaging: [
-      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'Cart 1 Hardware', hw:true, inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'Cart 2 Hardware', hw:true, inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}},
-      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+      { sku:'Preroll Package', inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:10000,runRate:2500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+        ]},
+      { sku:'Cart 1 Hardware', hw:true, inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:7000,runRate:1800,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-06-30'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+        ]},
+      { sku:'Cart 2 Hardware', hw:true, inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:5500,runRate:1400,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+        ]},
+      { sku:'Cart Package', inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:9000,runRate:2000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+        ]},
+      { sku:'FECO Package', inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:3000,runRate:600,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-08-01'],design:['2026-06-03','2026-06-24'],compliance:['2026-06-24','2026-09-22'],factory:['2026-09-22','2026-10-22'],photo:['2026-10-22','2026-11-12'],launch:['2026-11-12','2026-11-26']}}
+        ]}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-04-29','2026-05-20'] }},
       { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-05-06','2026-06-03'] }},
-      { sku:'Photography', color:'photo', phases:{ design:['2026-06-03','2026-11-12'] }},
+      { sku:'Photography', color:'photo', phases:{ photo:['2026-10-22','2026-11-12'] }},
       { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-08-05','2026-08-12'] }},
-      { sku:'Website', color:'website', phases:{ design:['2026-06-03','2026-07-08'], launch:['2026-11-12','2026-11-26'] }},
-      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
-      { sku:'In-Store Display', color:'display', phases:{ design:['2026-09-22','2026-10-22'], launch:['2026-10-22','2026-11-05'] }},
-      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-07-15','2026-08-15'] }},
-      { sku:'Merch', color:'merch', phases:{ design:['2026-07-01','2026-08-15'], launch:['2026-08-15','2026-09-15'] }}
+      { sku:'Website', color:'website', phases:{ design:['2026-06-03','2026-07-08'], launch:['2026-11-12','2026-12-03'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-11-12','2026-12-03'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-01','2026-08-15'], factory:['2026-11-26','2026-12-26'], launch:['2026-12-26','2027-01-09'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-01','2026-07-15'], launch:['2026-11-12','2026-12-03'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-07-01','2026-08-15'], factory:['2026-11-12','2026-12-10'], launch:['2026-12-10','2026-12-24'] }}
     ]
   },
   bubbles: {
     packaging: [
-      { sku:'Cart Package', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
+      { sku:'Cart Package 1', inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:6000,runRate:1500,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
+        ]},
+      { sku:'Cart Package 2', inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:5000,runRate:1200,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-15'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
+        ]},
+      { sku:'Cart Package 3', inventory:{qty:4500,runRate:1100,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:4500,runRate:1100,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
+        ]},
+      { sku:'Cart Package 4', inventory:{qty:4000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']},
+        subs:[
+          { sku:'Case Box', sub:true, inventory:{qty:4000,runRate:1000,unit:'/mo'}, phases:{inventory:['2026-03-01','2026-07-01'],design:['2026-06-24','2026-07-15'],compliance:['2026-07-15','2026-10-13'],factory:['2026-10-13','2026-11-12'],photo:['2026-11-12','2026-12-03'],launch:['2026-12-03','2026-12-17']}}
+        ]}
     ],
     brand: [
       { sku:'Strategy / Messaging', color:'strategy', phases:{ design:['2026-05-27','2026-06-17'] }},
       { sku:'Brand Evolution', color:'brandev', phases:{ design:['2026-06-10','2026-07-01'] }},
-      { sku:'Photography', color:'photo', phases:{ design:['2026-07-01','2026-12-03'] }},
+      { sku:'Photography', color:'photo', phases:{ photo:['2026-11-12','2026-12-03'] }},
       { sku:'Brand Expansion Deck', color:'expansion', phases:{ design:['2026-08-19','2026-09-02'] }},
-      { sku:'Website', color:'website', phases:{ design:['2026-06-24','2026-07-22'], launch:['2026-12-03','2026-12-17'] }},
-      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-07-01','2026-08-01'] }},
-      { sku:'In-Store Display', color:'display', phases:{ design:['2026-10-13','2026-11-12'], launch:['2026-11-12','2026-11-26'] }},
-      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-08-01','2026-08-30'] }},
-      { sku:'Merch', color:'merch', phases:{ design:['2026-07-15','2026-09-01'], launch:['2026-09-01','2026-10-01'] }}
+      { sku:'Website', color:'website', phases:{ design:['2026-06-24','2026-07-22'], launch:['2026-12-03','2026-12-24'] }},
+      { sku:'Social Media', color:'social', phases:{ design:['2026-05-15','2026-07-01'], launch:['2026-12-03','2026-12-24'] }},
+      { sku:'In-Store Display', color:'display', phases:{ design:['2026-06-15','2026-09-01'], factory:['2026-12-17','2027-01-16'], launch:['2027-01-16','2027-01-30'] }},
+      { sku:'Sales Assets', color:'sales', phases:{ design:['2026-06-15','2026-08-01'], launch:['2026-12-03','2026-12-24'] }},
+      { sku:'Merch', color:'merch', phases:{ design:['2026-07-15','2026-09-01'], factory:['2026-12-03','2026-12-31'], launch:['2026-12-31','2027-01-14'] }}
     ]
   }
 };
@@ -456,7 +530,7 @@ const BRANDS = {
 
 const PHASE_COLORS = { inventory:'#F59E0B', design:'#EC4899', compliance:'#8B5CF6', factory:'#F97316', photo:'#6B3FA0', launch:'#10B981', landed:'#10B981', website:'#06B6D4', social:'#3B82F6', display:'#A855F7', sales:'#EF4444', merch:'#14B8A6', strategy:'#185FA5', brandev:'#0F6E56', expansion:'#2D6A9F', dev:'#1A5C7A' };
 const BRAND_COLORS = ['website','social','display','sales','merch'];
-const BRAND_SUB_PHASES = { design: '#EC4899', launch: '#10B981' };
+const BRAND_SUB_PHASES = { design: '#EC4899', launch: '#10B981', photo: '#6B3FA0', factory: '#F97316', compliance: '#8B5CF6' };
 
 // ── State ──
 let projectData = loadData();
@@ -465,6 +539,7 @@ let currentBrand = 'all';
 let currentZoom = 'quarter';
 let collapsedBrands = {};
 let collapsedHardware = {}; // keyed by brand
+let collapsedSubs = {}; // keyed by brand+idx e.g. "headchange_2"
 let selectedItem = null; // {brand, type, idx}
 let dragState = null;
 
@@ -573,6 +648,20 @@ function renderSidebar() {
         const ni = hasNotes(bk,'packaging',i);
         h+=`<div class="sku-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
         h+=`<div class="sku-sub-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
+        if(item.subs && item.subs.length>0){
+          const subKey = bk+'_'+i;
+          const subCol = collapsedSubs[subKey] !== false; // collapsed by default
+          h+=`<div class="hw-toggle ${subCol?'collapsed':''}" onclick="event.stopPropagation();toggleSubs('${subKey}')" style="padding-left:28px"><span class="hw-chevron">&#9662;</span><span>${item.sku} Components</span><span class="hw-count">${item.subs.length}</span></div>`;
+          if(!subCol){
+            item.subs.forEach((sub,si)=>{
+              const subIdx = 'sub_'+i+'_'+si;
+              const sm=invMonths(sub), sst=invStatus(sm);
+              const sact=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging_sub'&&selectedItem.parentIdx===i&&selectedItem.subIdx===si;
+              h+=`<div class="sku-row hw-item ${sact?'active':''}" onclick="selectSubItem('${bk}',${i},${si})" style="padding-left:36px"><span class="sku-name">${sub.sku}</span><span class="inventory-badge ${sst}">${sm}mo</span></div>`;
+              h+=`<div class="sku-sub-row hw-item ${sact?'active':''}" onclick="selectSubItem('${bk}',${i},${si})" style="padding-left:36px"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
+            });
+          }
+        }
       });
       if(hwItems.length>0){
         const hwCol = collapsedHardware[bk] !== false; // collapsed by default
@@ -584,6 +673,19 @@ function renderSidebar() {
             const ni = hasNotes(bk,'packaging',i);
             h+=`<div class="sku-row hw-item ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sku-name">${item.sku}</span>${ni?'<div class="note-indicator"></div>':''}<span class="inventory-badge ${st}">${m}mo</span></div>`;
             h+=`<div class="sku-sub-row hw-item ${act?'active':''}" onclick="selectItem('${bk}','packaging',${i})"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
+            if(item.subs && item.subs.length>0){
+              const subKey = bk+'_hw_'+i;
+              const subCol = collapsedSubs[subKey] !== false;
+              h+=`<div class="hw-toggle ${subCol?'collapsed':''}" onclick="event.stopPropagation();toggleSubs('${subKey}')" style="padding-left:40px"><span class="hw-chevron">&#9662;</span><span>${item.sku} Components</span><span class="hw-count">${item.subs.length}</span></div>`;
+              if(!subCol){
+                item.subs.forEach((sub,si)=>{
+                  const sm=invMonths(sub), sst=invStatus(sm);
+                  const sact=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging_sub'&&selectedItem.parentIdx===i&&selectedItem.subIdx===si;
+                  h+=`<div class="sku-row hw-item ${sact?'active':''}" onclick="selectSubItem('${bk}',${i},${si})" style="padding-left:48px"><span class="sku-name">${sub.sku}</span><span class="inventory-badge ${sst}">${sm}mo</span></div>`;
+                  h+=`<div class="sku-sub-row hw-item ${sact?'active':''}" onclick="selectSubItem('${bk}',${i},${si})" style="padding-left:48px"><span class="sub-icon">↳</span><span class="sub-label">Design → Compliance → Factory → Photo → Launch</span></div>`;
+                });
+              }
+            }
           });
         }
       }
@@ -625,6 +727,30 @@ function toggleHardware(bk) {
   render();
 }
 
+function toggleSubs(key) {
+  collapsedSubs[key] = collapsedSubs[key] === false ? true : false;
+  render();
+}
+
+function selectSubItem(bk,parentIdx,subIdx) {
+  selectedItem = {brand:bk,type:'packaging_sub',parentIdx,subIdx};
+  render();
+}
+
+function renderSubPhasesRow(bk,parentIdx,sub,subIdx,act){
+  let s=`<div class="gantt-sub-row ${act?'active':''}">`;
+  ['design','compliance','factory','photo','launch','landed'].forEach(ph=>{
+    const dates=sub.phases[ph];
+    if(!dates) return;
+    const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l,c=PHASE_COLORS[ph],label=ph.charAt(0).toUpperCase()+ph.slice(1);
+    s+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}">
+      ${w>7?label:''}
+    </div>`;
+  });
+  s+='</div>';
+  return s;
+}
+
 function renderTimeline() {
   const tl=document.getElementById('timeline'), {start,months}=getMonthRange();
   let hdr='<div class="timeline-header">';
@@ -652,16 +778,37 @@ function renderTimeline() {
         if(invDates){
           const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
           body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
-          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
+          body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c};cursor:pointer" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
             onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','Inventory (${item.inventory?item.inventory.qty.toLocaleString():''} units @ ${item.inventory?item.inventory.runRate.toLocaleString():''}${item.inventory?item.inventory.unit:''})','${invDates[0]}','${invDates[1]}')" onmouseleave="hideTip()"
             onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'inventory')"
-            ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+            onclick="editInventory(event,'${bk}',${idx})"
+            ondblclick="event.stopPropagation();editInventory(event,'${bk}',${idx})">
             <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','left')"></div>
             ${w>7?'Inventory':''}
             <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
           </div></div>`;
         }
         body+=renderPhasesSubRow(bk,item,idx,act);
+        // Sub-items (e.g. Jar Lid Sticker, Side Wrap under Jars)
+        if(item.subs && item.subs.length>0){
+          const subKey = bk+'_'+idx;
+          const subCol = collapsedSubs[subKey] !== false;
+          body+=`<div class="timeline-hw-toggle"></div>`;
+          if(!subCol){
+            item.subs.forEach((sub,si)=>{
+              const sact=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging_sub'&&selectedItem.parentIdx===idx&&selectedItem.subIdx===si;
+              const invDates = sub.phases.inventory;
+              if(invDates){
+                const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
+                body+=`<div class="gantt-row ${sact?'active':''}">`;
+                body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}">
+                  ${w>7?'Inventory':''}
+                </div></div>`;
+              }
+              body+=renderSubPhasesRow(bk,idx,sub,si,sact);
+            });
+          }
+        }
       });
       // Hardware toggle + items
       if(tlHw.length>0){
@@ -675,16 +822,33 @@ function renderTimeline() {
             if(invDates){
               const l=dateToPercent(invDates[0]),r=dateToPercent(invDates[1]),w=r-l,c=PHASE_COLORS.inventory;
               body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','packaging',${idx})">`;
-              body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
+              body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c};cursor:pointer" data-brand="${bk}" data-type="packaging" data-idx="${idx}" data-phase="inventory"
                 onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','Inventory','${invDates[0]}','${invDates[1]}')" onmouseleave="hideTip()"
                 onmousedown="startBarDrag(event,'${bk}','packaging',${idx},'inventory')"
-                ondblclick="event.stopPropagation();editItem('${bk}','packaging',${idx})">
+                onclick="editInventory(event,'${bk}',${idx})"
+                ondblclick="event.stopPropagation();editInventory(event,'${bk}',${idx})">
                 <div class="drag-handle left" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','left')"></div>
                 ${w>7?'Inventory':''}
                 <div class="drag-handle right" onmousedown="event.stopPropagation();startDrag(event,'${bk}','packaging',${idx},'inventory','right')"></div>
               </div></div>`;
             }
             body+=renderPhasesSubRow(bk,item,idx,act);
+            if(item.subs && item.subs.length>0){
+              const subKey = bk+'_hw_'+idx;
+              const subCol = collapsedSubs[subKey] !== false;
+              body+=`<div class="timeline-hw-toggle"></div>`;
+              if(!subCol){
+                item.subs.forEach((sub,si)=>{
+                  const sact=selectedItem&&selectedItem.brand===bk&&selectedItem.type==='packaging_sub'&&selectedItem.parentIdx===idx&&selectedItem.subIdx===si;
+                  const sinv = sub.phases.inventory;
+                  if(sinv){
+                    const l=dateToPercent(sinv[0]),r=dateToPercent(sinv[1]),w=r-l,c=PHASE_COLORS.inventory;
+                    body+=`<div class="gantt-row ${sact?'active':''}"><div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}">${w>7?'Inventory':''}</div></div>`;
+                  }
+                  body+=renderSubPhasesRow(bk,idx,sub,si,sact);
+                });
+              }
+            }
           });
         }
       }
@@ -695,7 +859,7 @@ function renderTimeline() {
         body+=`<div class="gantt-row ${act?'active':''}" onclick="selectItem('${bk}','brand',${idx})">`;
         Object.entries(item.phases).forEach(([ph,dates])=>{
           const l=dateToPercent(dates[0]),r=dateToPercent(dates[1]),w=r-l;
-          const c = ph==='design' ? BRAND_SUB_PHASES.design : BRAND_SUB_PHASES.launch;
+          const c = BRAND_SUB_PHASES[ph] || BRAND_SUB_PHASES.design;
           const label = ph.charAt(0).toUpperCase()+ph.slice(1);
           body+=`<div class="gantt-bar" style="left:${l}%;width:${w}%;background:${c}" data-brand="${bk}" data-type="brand" data-idx="${idx}" data-phase="${ph}"
             onmouseenter="showTip(event,'${bk}','${item.sku.replace(/'/g,"\\'")}','${item.sku} - ${label}','${dates[0]}','${dates[1]}')" onmouseleave="hideTip()"
@@ -753,32 +917,97 @@ function renderNotesPanel() {
   } else {
     notes.slice().reverse().forEach((n,ri) => {
       const i = notes.length - 1 - ri;
+      const authorColor = TEAM_COLORS[n.author] || '#94A3B8';
       html += `<div class="note-entry">
-        <button class="note-delete" onclick="deleteNote('${key}',${i})">&times;</button>
-        <div class="note-time">${new Date(n.time).toLocaleString()}</div>
+        <div class="note-header">
+          <div class="note-author-dot" style="background:${authorColor}"></div>
+          <span class="note-author" style="color:${authorColor}">${escapeHtml(n.author||'Unknown')}</span>
+          <span class="note-time">${new Date(n.time).toLocaleString()}</span>
+        </div>
         <div class="note-text">${escapeHtml(n.text)}</div>
-      </div>`;
+        <div class="note-actions">
+          <button class="note-action-btn" onclick="replyToNote('${key}',${i})">Reply</button>
+          <button class="note-delete" onclick="deleteNote('${key}',${i})">&times; Delete</button>
+        </div>`;
+      // Render replies
+      if (n.replies && n.replies.length > 0) {
+        html += `<div class="note-replies">`;
+        n.replies.forEach((r, ri) => {
+          const rc = TEAM_COLORS[r.author] || '#94A3B8';
+          html += `<div class="note-entry">
+            <div class="note-header">
+              <div class="note-author-dot" style="background:${rc}"></div>
+              <span class="note-author" style="color:${rc}">${escapeHtml(r.author||'Unknown')}</span>
+              <span class="note-time">${new Date(r.time).toLocaleString()}</span>
+            </div>
+            <div class="note-text">${escapeHtml(r.text)}</div>
+            <div class="note-actions">
+              <button class="note-delete" onclick="deleteReply('${key}',${i},${ri})">&times; Delete</button>
+            </div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
     });
   }
   document.getElementById('notesBody').innerHTML = html;
 }
 
+let replyTarget = null; // { key, idx }
+
 function addNote() {
   if (!selectedItem) return;
   const text = document.getElementById('noteInput').value.trim();
   if (!text) return;
+  const author = document.getElementById('noteAuthor').value;
   const key = noteKey(selectedItem.brand, selectedItem.type, selectedItem.idx);
-  if (!notesData[key]) notesData[key] = [];
-  notesData[key].push({ text, time: new Date().toISOString() });
+
+  if (replyTarget && replyTarget.key === key) {
+    // Add as reply
+    if (!notesData[key]) return;
+    const note = notesData[key][replyTarget.idx];
+    if (!note) return;
+    if (!note.replies) note.replies = [];
+    note.replies.push({ author, text, time: new Date().toISOString() });
+    cancelReply();
+  } else {
+    // New top-level note
+    if (!notesData[key]) notesData[key] = [];
+    notesData[key].push({ author, text, time: new Date().toISOString(), replies: [] });
+  }
   saveNotes();
   document.getElementById('noteInput').value = '';
   render();
+}
+
+function replyToNote(key, idx) {
+  replyTarget = { key, idx };
+  const note = notesData[key][idx];
+  document.getElementById('replyingTo').style.display = 'block';
+  document.getElementById('replyingName').textContent = note.author || 'Unknown';
+  document.getElementById('noteInput').focus();
+  document.getElementById('noteInput').placeholder = `Reply to ${note.author||'Unknown'}...`;
+}
+
+function cancelReply() {
+  replyTarget = null;
+  document.getElementById('replyingTo').style.display = 'none';
+  document.getElementById('noteInput').placeholder = 'Add a note...';
 }
 
 function deleteNote(key, idx) {
   if (notesData[key]) {
     notesData[key].splice(idx, 1);
     if (notesData[key].length === 0) delete notesData[key];
+    saveNotes();
+    render();
+  }
+}
+
+function deleteReply(key, noteIdx, replyIdx) {
+  if (notesData[key] && notesData[key][noteIdx] && notesData[key][noteIdx].replies) {
+    notesData[key][noteIdx].replies.splice(replyIdx, 1);
     saveNotes();
     render();
   }
@@ -874,6 +1103,52 @@ function endDrag() {
 }
 
 // ── Edit Modal ──
+function editInventory(event, brand, idx) {
+  event.stopPropagation();
+  if(dragState) return; // don't open if we were dragging
+  const modal = document.getElementById('editModal');
+  const panel = document.getElementById('editPanel');
+  const b = BRANDS[brand];
+  const item = projectData[brand].packaging[idx];
+  const inv = item.inventory;
+  const invDates = item.phases.inventory;
+
+  panel.innerHTML = `<h2>Edit Inventory</h2>
+    <div class="edit-subtitle" style="color:${b.color}">${b.name} — ${escapeHtml(item.sku)}</div>
+    <div style="display:flex;gap:10px">
+      <div class="edit-field" style="flex:1"><label>Current Inventory (units)</label><input type="number" id="einv-qty" value="${inv.qty}"></div>
+      <div class="edit-field" style="flex:1"><label>Run Rate</label><input type="number" id="einv-rate" value="${inv.runRate}"></div>
+    </div>
+    <div class="edit-field"><label>Run Rate Unit</label><input type="text" id="einv-unit" value="${inv.unit}" placeholder="/mo, /wk, etc."></div>
+    <hr style="border-color:var(--border);margin:14px 0">
+    <div style="display:flex;gap:10px">
+      <div class="edit-field" style="flex:1"><label>Inventory Start</label><input type="date" id="einv-start" value="${invDates[0]}"></div>
+      <div class="edit-field" style="flex:1"><label>Inventory End</label><input type="date" id="einv-end" value="${invDates[1]}"></div>
+    </div>
+    <div class="edit-field" style="margin-top:8px">
+      <label>Months of Supply</label>
+      <div style="font-size:20px;font-weight:700;color:${invMonths(item)<=2?'#FCA5A5':invMonths(item)<=4?'#FBBF24':'#6EE7B7'}">${invMonths(item)} months</div>
+    </div>
+    <div class="edit-actions">
+      <div style="flex:1"></div>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInventory('${brand}',${idx})">Save</button>
+    </div>`;
+  modal.classList.add('show');
+}
+
+function saveInventory(brand, idx) {
+  const item = projectData[brand].packaging[idx];
+  item.inventory.qty = parseInt(document.getElementById('einv-qty').value)||0;
+  item.inventory.runRate = parseInt(document.getElementById('einv-rate').value)||1;
+  item.inventory.unit = document.getElementById('einv-unit').value || '/mo';
+  item.phases.inventory[0] = document.getElementById('einv-start').value;
+  item.phases.inventory[1] = document.getElementById('einv-end').value;
+  saveData();
+  closeModal();
+  render();
+}
+
 function editItem(brand, type, idx) {
   const modal = document.getElementById('editModal');
   const panel = document.getElementById('editPanel');
@@ -1054,6 +1329,21 @@ function renderGlobalNotes() {
   globalNotes.slice().reverse().forEach((n, ri) => {
     const i = globalNotes.length - 1 - ri;
     const color = TEAM_COLORS[n.author] || '#94A3B8';
+    let repliesHtml = '';
+    if(n.replies && n.replies.length>0){
+      n.replies.forEach((r,rIdx)=>{
+        const rc = TEAM_COLORS[r.author]||'#94A3B8';
+        repliesHtml+=`<div style="margin-left:16px;margin-top:8px;padding:8px 10px;background:var(--surface);border-radius:6px;border:1px solid var(--border)">
+          <div class="gn-entry-header" style="margin-bottom:4px">
+            <div class="gn-author-dot" style="background:${rc}"></div>
+            <span class="gn-author" style="color:${rc};font-size:11px">${escapeHtml(r.author)}</span>
+            <span class="gn-time">${new Date(r.time).toLocaleString()}</span>
+            <button class="gn-delete" onclick="deleteGlobalReply(${i},${rIdx})">&times;</button>
+          </div>
+          <div class="gn-text" style="font-size:11px">${escapeHtml(r.text)}</div>
+        </div>`;
+      });
+    }
     html += `<div class="gn-entry">
       <div class="gn-entry-header">
         <div class="gn-author-dot" style="background:${color}"></div>
@@ -1062,6 +1352,8 @@ function renderGlobalNotes() {
         <button class="gn-delete" onclick="deleteGlobalNote(${i})">&times;</button>
       </div>
       <div class="gn-text">${escapeHtml(n.text)}</div>
+      ${repliesHtml}
+      <button onclick="startGlobalReply(${i})" style="margin-top:6px;background:none;border:none;color:var(--text-dim);font-size:10px;cursor:pointer;padding:2px 0">↩ Reply</button>
     </div>`;
   });
   body.innerHTML = html;
@@ -1071,7 +1363,13 @@ function addGlobalNote() {
   const author = document.getElementById('gnAuthor').value;
   const text = document.getElementById('gnInput').value.trim();
   if (!text) return;
-  globalNotes.push({ author, text, time: new Date().toISOString() });
+  if (gnReplyTarget !== null) {
+    if (!globalNotes[gnReplyTarget].replies) globalNotes[gnReplyTarget].replies = [];
+    globalNotes[gnReplyTarget].replies.push({ author, text, time: new Date().toISOString() });
+    cancelGlobalReply();
+  } else {
+    globalNotes.push({ author, text, time: new Date().toISOString(), replies: [] });
+  }
   saveGlobalNotes();
   document.getElementById('gnInput').value = '';
   renderGlobalNotes();
@@ -1079,6 +1377,30 @@ function addGlobalNote() {
 
 function deleteGlobalNote(idx) {
   globalNotes.splice(idx, 1);
+  saveGlobalNotes();
+  renderGlobalNotes();
+}
+
+let gnReplyTarget = null;
+
+function startGlobalReply(idx) {
+  gnReplyTarget = idx;
+  const note = globalNotes[idx];
+  const input = document.getElementById('gnInput');
+  input.placeholder = `Reply to ${note.author}...`;
+  input.focus();
+  document.getElementById('gnReplyIndicator').style.display = 'block';
+  document.getElementById('gnReplyName').textContent = note.author;
+}
+
+function cancelGlobalReply() {
+  gnReplyTarget = null;
+  document.getElementById('gnInput').placeholder = 'Add a team note...';
+  document.getElementById('gnReplyIndicator').style.display = 'none';
+}
+
+function deleteGlobalReply(noteIdx, replyIdx) {
+  globalNotes[noteIdx].replies.splice(replyIdx, 1);
   saveGlobalNotes();
   renderGlobalNotes();
 }
